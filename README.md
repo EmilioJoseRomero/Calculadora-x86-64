@@ -9,14 +9,9 @@ Calculadora en modo texto basado en una arquitectura x86-64 sobre un sistema ope
 
 ## Instrucciones de Ejecución del Código
 
-1. Ejecute el siguiente comando para compilar el código:
+1. Ejecute el siguiente comando para compilar y ejecutar el código:
 
 ```bash
  make
 ```
-2. Una vez completada la compilación, ejecute el siguiente comando para iniciar el programa:
 
-```bash
- ./ejecutable
-```
-    
