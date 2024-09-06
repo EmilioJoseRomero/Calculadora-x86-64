@@ -1,5 +1,5 @@
 section .data
-    mensaje_menu db "---------------------", 10, "|    Calculadora    |", 10, "|    1 - Sumar      |", 10, "|    2 - Restar     |", 10, "|    3 - Multiplicar|", 10, "|    4 - Dividir    |", 10, "|    5 - Apagar     |", 10, "---------------------", 10, "Seleccione una opcion: ", 10, 0
+    mensaje_menu db "---------------------", 10, "|    Calculadora    |", 10, "|    1 - Sumar      |", 10, "|    2 - Restar     |", 10, "|    3 - Multiplicar|", 10, "|    4 - Dividir    |", 10, "|    5 - Apagar     |", 10, "---------------------", 10, "Seleccione una opcion: ", 10
     mensaje_menu_len equ $ - mensaje_menu
 
     mensaje_ingreso db "Ingrese el primer numero (entero): ", 0
@@ -11,7 +11,7 @@ section .data
     mensaje_resultado db "Resultado: ", 0
     mensaje_resultado_len equ $ - mensaje_resultado
 
-    mensaje_error db "Error: Division por cero no permitida.", 10, 0 
+    mensaje_error db "Error: Division por cero no permitida.", 10
     mensaje_error_len equ $ - mensaje_error 
 
     mensaje_opcion_invalida db "Opcion invalida. Por favor, intente de nuevo.", 0
@@ -212,7 +212,6 @@ string_to_int:
 int_to_string:
     ; rdi: entero a convertir
     ; rsi: buffer para la cadena resultante
-
     ; Manejar caso de cero
     cmp rdi, 0
     je .zero
