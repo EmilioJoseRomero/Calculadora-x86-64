@@ -1,16 +1,22 @@
 section .data
     mensaje_menu db "---------------------", 10, "|    Calculadora    |", 10, "|    1 - Sumar      |", 10, "|    2 - Restar     |", 10, "|    3 - Multiplicar|", 10, "|    4 - Dividir    |", 10, "|    5 - Apagar     |", 10, "---------------------", 10, "Seleccione una opcion: ", 10, 0
     mensaje_menu_len equ $ - mensaje_menu
+
     mensaje_ingreso db "Ingrese el primer numero (entero): ", 0
     mensaje_ingreso_len equ $ - mensaje_ingreso
+
     mensaje_segundo db "Ingrese el segundo numero (entero): ", 0
     mensaje_segundo_len equ $ - mensaje_segundo
+
     mensaje_resultado db "Resultado: ", 0
     mensaje_resultado_len equ $ - mensaje_resultado
+
     mensaje_error db "Error: Division por cero no permitida.", 10, 0 
     mensaje_error_len equ $ - mensaje_error 
-    mensaje_opcion_invalida db "Opcion invalida. Por favor, intente de nuevo.", 10, 0
+
+    mensaje_opcion_invalida db "Opcion invalida. Por favor, intente de nuevo.", 0
     mensaje_opcion_invalida_len equ $ - mensaje_opcion_invalida
+    
     cambio_de_linea db 0x0A
 
 section .bss
