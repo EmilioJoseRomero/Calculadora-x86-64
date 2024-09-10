@@ -14,7 +14,7 @@ section .data
     mensaje_error db "Error: Division por cero no permitida.", 10
     mensaje_error_len equ $ - mensaje_error 
 
-    mensaje_opcion_invalida db "Opcion invalida. Por favor, intente de nuevo.", 0
+    mensaje_opcion_invalida db "Opcion invalida. Por favor, intente de nuevo.", 0x0A
     mensaje_opcion_invalida_len equ $ - mensaje_opcion_invalida
     
     cambio_de_linea db 0x0A
@@ -23,6 +23,7 @@ section .bss
     num1 resb 11           ; Buffer para el primer número (espacio para 10 dígitos y el '\n')
     num2 resb 11           ; Buffer para el segundo número
     resultado resb 11      ; Buffer para el resultado en texto (espacio para números grandes y el '\n')
+
     opcion resb 2          ; Buffer para la opción del menú 
 
 section .text
@@ -74,7 +75,10 @@ sumar:
     call pedir_segundo_numero
     mov r9, rax
     add r8, r9
+
+    call limpiar_buffer_resultado
     mov rdi, r8
+
     call int_to_string
     jmp mostrar_resultado
 
@@ -84,7 +88,12 @@ restar:
     call pedir_segundo_numero
     mov r9, rax
     sub r8, r9
+
+    call limpiar_buffer_resultado
     mov rdi, r8
+
+
+
     call int_to_string
     jmp mostrar_resultado
 
@@ -94,11 +103,17 @@ multiplicar:
     call pedir_segundo_numero
     mov r9, rax
     imul r8, r9
+
+    call limpiar_buffer_resultado
     mov rdi, r8
+
+    
     call int_to_string
     jmp mostrar_resultado
 
 dividir:
+    call limpiar_buffer_resultado
+
     call pedir_primer_numero
     mov r8, rax
     call pedir_segundo_numero
@@ -108,6 +123,7 @@ dividir:
     mov rax, r8           ; Cargar dividendo en rax
     xor rdx, rdx          ; Limpiar rdx antes de la división         
     div r9                ; Dividir rax entre r9
+
     mov rdi, rax          ; Guardar el resultado en rdi
     call int_to_string
     jmp mostrar_resultado
@@ -143,6 +159,8 @@ mostrar_resultado:
     mov rdx, 1         ; longitud del mensaje (1 salto de línea)
     syscall
 
+
+
     jmp _start
 
 _exit:
@@ -167,7 +185,7 @@ pedir_primer_numero:
 
     ; Convertir las cadenas a enteros
     call string_to_int
-    
+
     ret
 
 pedir_segundo_numero:
@@ -241,4 +259,16 @@ int_to_string:
     mov byte [rcx], '0'   ; Manejar el caso especial de cero
 
 .done:
+    ret
+
+
+; Limpia el buffer de resultados antes de cada conversión a cadena
+limpiar_buffer_resultado:
+    mov rcx, 11           ; Tamaño del buffer
+    mov rsi, resultado     ; Apuntar al buffer de resultados
+    xor rax, rax           ; Cargar 0 en rax (valor nulo)
+.limpiar_loop:
+    mov byte [rsi], 0      ; Establecer el byte a 0 (null terminator)
+    inc rsi                ; Mover al siguiente byte
+    loop .limpiar_loop     ; Repetir hasta que el buffer esté limpio
     ret
