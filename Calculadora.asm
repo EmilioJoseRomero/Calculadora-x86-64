@@ -341,7 +341,7 @@ int_to_string:
 .done:
     ret
 
-; Convertir entero a cadena hexadecimal
+
 ; Convertir entero a cadena hexadecimal
 int_to_hex_string:
     ; rdi: entero a convertir
