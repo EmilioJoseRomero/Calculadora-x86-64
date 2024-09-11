@@ -16,6 +16,15 @@ section .data
 
     mensaje_opcion_invalida db "Opcion invalida. Por favor, intente de nuevo.", 0x0A
     mensaje_opcion_invalida_len equ $ - mensaje_opcion_invalida
+
+    mensaje_resultado_Hexa db "Resultado en Base Hexadecimal: ", 0
+    mensaje_resultado__Hexa_len equ $ - mensaje_resultado_Hexa
+    
+    mensaje_resultado_Octal db "Resultado en Base Octal: ", 0
+    mensaje_resultado_Octal_len equ $ - mensaje_resultado_Octal
+
+    mensaje_resultado_Binario db "Resultado en Binario: ", 0
+    mensaje_resultado_Binario_len equ $ - mensaje_resultado_Binario
     
     cambio_de_linea db 0x0A
 
@@ -23,6 +32,9 @@ section .bss
     num1 resb 11           ; Buffer para el primer número (espacio para 10 dígitos y el '\n')
     num2 resb 11           ; Buffer para el segundo número
     resultado resb 11      ; Buffer para el resultado en texto (espacio para números grandes y el '\n')
+    resultado_hex resb 15 ; Buffer para el resultado en hexadecimal (espacio para "0x" + 8 dígitos + '\n')
+    resultado_oct resb 15
+    resultado_Bin resb 64
 
     opcion resb 2          ; Buffer para la opción del menú 
 
@@ -80,6 +92,9 @@ sumar:
     mov rdi, r8
 
     call int_to_string
+    call int_to_hex_string
+    call int_to_octal
+    call int_to_binary
     jmp mostrar_resultado
 
 restar:
@@ -92,9 +107,10 @@ restar:
     call limpiar_buffer_resultado
     mov rdi, r8
 
-
-
     call int_to_string
+    call int_to_hex_string
+    call int_to_octal
+    call int_to_binary
     jmp mostrar_resultado
 
 multiplicar:
@@ -107,8 +123,10 @@ multiplicar:
     call limpiar_buffer_resultado
     mov rdi, r8
 
-    
     call int_to_string
+    call int_to_hex_string
+    call int_to_octal
+    call int_to_binary
     jmp mostrar_resultado
 
 dividir:
@@ -125,7 +143,11 @@ dividir:
     div r9                ; Dividir rax entre r9
 
     mov rdi, rax          ; Guardar el resultado en rdi
+
     call int_to_string
+    call int_to_hex_string
+    call int_to_octal
+    call int_to_binary
     jmp mostrar_resultado
 
 division_error:
@@ -159,7 +181,65 @@ mostrar_resultado:
     mov rdx, 1         ; longitud del mensaje (1 salto de línea)
     syscall
 
+    ; Mostrar el mensaje de resultado
+    mov rax, 1            ; sys_write
+    mov rdi, 1            ; STDOUT
+    mov rsi, mensaje_resultado_Hexa ; Mensaje a escribir
+    mov rdx, mensaje_resultado__Hexa_len  ; Longitud del mensaje
+    syscall
 
+    mov rax, 1          ; sys_write
+    mov rdi, 1          ; STDOUT
+    mov rsi, resultado_hex ; Buffer para el resultado en hexadecimal
+    mov rdx, 14         ; Longitud del resultado hexadecimal
+    syscall
+
+    ; Imprimir cambio de linea
+    mov rax, 1          ; syscall número para sys_write
+    mov rdi, 1          ; file descriptor 1 (stdout)
+    mov rsi, cambio_de_linea    ; dirección del mensaje
+    mov rdx, 1         ; longitud del mensaje (1 salto de línea)
+    syscall
+
+    ; Mostrar el mensaje de resultado
+    mov rax, 1            ; sys_write
+    mov rdi, 1            ; STDOUT
+    mov rsi, mensaje_resultado_Octal ; Mensaje a escribir
+    mov rdx, mensaje_resultado_Octal_len  ; Longitud del mensaje
+    syscall
+
+    mov rax, 1          ; sys_write
+    mov rdi, 1          ; STDOUT
+    mov rsi, resultado_oct ; Buffer para el resultado en hexadecimal
+    mov rdx, 15         ; Longitud del resultado hexadecimal
+    syscall
+
+    ; Imprimir cambio de linea
+    mov rax, 1          ; syscall número para sys_write
+    mov rdi, 1          ; file descriptor 1 (stdout)
+    mov rsi, cambio_de_linea    ; dirección del mensaje
+    mov rdx, 1         ; longitud del mensaje (1 salto de línea)
+    syscall
+
+    ; Mostrar el mensaje de resultado
+    mov rax, 1            ; sys_write
+    mov rdi, 1            ; STDOUT
+    mov rsi, mensaje_resultado_Binario ; Mensaje a escribir
+    mov rdx, mensaje_resultado_Binario_len  ; Longitud del mensaje
+    syscall
+
+    mov rax, 1          ; sys_write
+    mov rdi, 1          ; STDOUT
+    mov rsi, resultado_Bin ; Buffer para el resultado en hexadecimal
+    mov rdx, 64         ; Longitud del resultado hexadecimal
+    syscall
+
+    ; Imprimir cambio de linea
+    mov rax, 1          ; syscall número para sys_write
+    mov rdi, 1          ; file descriptor 1 (stdout)
+    mov rsi, cambio_de_linea    ; dirección del mensaje
+    mov rdx, 1         ; longitud del mensaje (1 salto de línea)
+    syscall
 
     jmp _start
 
@@ -259,6 +339,137 @@ int_to_string:
     mov byte [rcx], '0'   ; Manejar el caso especial de cero
 
 .done:
+    ret
+
+; Convertir entero a cadena hexadecimal
+; Convertir entero a cadena hexadecimal
+int_to_hex_string:
+    ; rdi: entero a convertir
+    ; rsi: buffer para la cadena hexadecimal
+
+    ; Manejar caso de cero
+    cmp rdi, 0
+    je .zero_hex
+
+    ; Configurar rax para la conversión
+    mov rax, rdi          ; Copiar entero a rax
+    mov rbx, 16           ; Base 16
+    mov rcx, resultado_hex ; Buffer para el resultado hexadecimal
+    add rcx, 15           ; Apuntar al final del buffer
+    mov byte [rcx], 0     ; Null terminator para la cadena
+    mov byte [rcx - 1], 'x'
+    mov byte [rcx - 2], '0'
+    sub rcx, 2            ; Mover el puntero al inicio del buffer hexadecimal
+
+    ; Reservar espacio para el prefijo "0x" y el número hexadecimal
+    mov rdx, rcx         ; Guardar el puntero para el prefijo "0x"
+    mov byte [rdx], '0'
+    mov byte [rdx + 1], 'x'
+    add rdx, 2           ; Mover al final del prefijo
+
+.reverse_hex_loop:
+    xor rdx, rdx         ; Limpiar rdx antes de la división
+    div rbx              ; Dividir rax entre 16
+    cmp dl, 9
+    jle .digit
+    add dl, 'A' - 10     ; Convertir dígito 10-15 a 'a'-'f'
+    jmp .store
+
+.digit:
+    add dl, '0'          ; Convertir dígito 0-9 a '0'-'9'
+
+.store:
+    mov [rcx], dl        ; Guardar el dígito en el buffer
+    dec rcx              ; Mover al siguiente dígito
+    test rax, rax        ; Verificar si queda más para procesar
+    jnz .reverse_hex_loop ; Si no es cero, continuar
+
+    ; Mover el puntero de la cadena al principio
+    inc rcx              ; Ajustar el puntero de la cadena
+    jmp .done_hex
+
+.zero_hex:
+    mov byte [rcx], '0'  ; Manejar el caso especial de cero
+    mov byte [rcx + 1], 'x'
+    mov byte [rcx + 2], '0'
+    add rcx, 2           ; Ajustar el puntero para "0x0"
+
+.done_hex:
+    ; Calcular longitud del buffer hexadecimal
+    mov rdx, 15
+    sub rdx, rcx         ; Calcular longitud
+    ret
+
+
+; Convertir entero a cadena octal
+int_to_octal:
+    ; rdi: entero a convertir
+    ; rsi: buffer para la cadena octal resultante
+
+    ; Manejar caso de cero
+    cmp rdi, 0
+    je .zero
+
+    ; Configurar rax para la conversión
+    mov rax, rdi          ; Copiar entero a rax
+    mov rbx, 8            ; Divisor 8 para octal
+    mov rcx, resultado_oct    ; Buffer para el resultado
+    add rcx, 15           ; Apuntar al final del buffer (espacio para 10 dígitos y el '\0')
+    mov byte [rcx], 0     ; Null terminator para la cadena
+    dec rcx               ; Mover al último dígito
+
+.reverse_loop:
+    xor rdx, rdx          ; Limpiar rdx antes de la división
+    div rbx               ; Dividir rax entre 8
+    add dl, '0'           ; Convertir el dígito a carácter ASCII
+    cmp dl, '9'           ; Verificar si el dígito es mayor que 9
+    jbe .store_digit      ; Si no es mayor que 9, almacenar dígito
+    add dl, 7             ; Convertir dígitos de 10 a 15 a 'a' a 'f' en octal (solo útil si manejamos bases superiores)
+.store_digit:
+    mov [rcx], dl         ; Guardar el dígito en el buffer
+    dec rcx               ; Mover al siguiente dígito
+    test rax, rax         ; Verificar si queda más para procesar
+    jnz .reverse_loop     ; Si no es cero, continuar
+
+    ; Mover el puntero de la cadena al principio
+    inc rcx               ; Ajustar el puntero de la cadena
+    jmp .done
+
+.zero:
+    mov byte [rcx], '0'   ; Manejar el caso especial de cero
+
+.done:
+    ret
+
+
+; Convertir entero a cadena binaria
+int_to_binary:
+    ; Convertir el número en RDI a una cadena binaria
+    ; RDI (número a convertir)
+    ; RSI (dirección del buffer para almacenar el resultado)
+
+    mov rcx, 64         ; 64 bits para recorrer
+    mov rbx, rdi        ; Copiar el número a un registro temporal
+    mov rdx, resultado_Bin        ; Copiar la dirección del buffer a un registro temporal
+
+    ; Inicializar el buffer para almacenar los bits
+    mov byte [rdx + 64], 0 ; Establecer el terminador nulo en el final del buffer
+    lea rsi, [rdx]       ; Apuntar al principio del buffer
+
+convertir_binario_loop:
+    shl rbx, 1          ; Desplazar el bit más significativo a la izquierda
+    jc  bit_uno         ; Si el bit es 1, establecer '1'
+    mov byte [rsi], '0' ; De lo contrario, establecer '0'
+    jmp short bit_siguiente
+bit_uno:
+    mov byte [rsi], '1'
+bit_siguiente:
+    inc rsi             ; Mover al siguiente byte en el buffer
+    loop convertir_binario_loop ; Repetir para los 64 bits
+
+    ; Añadir el terminador nulo al final de la cadena
+    mov byte [rsi], 0
+
     ret
 
 
