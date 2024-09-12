@@ -81,54 +81,58 @@ _start:
     jmp _start
 
 ; Realizar las operaciones
+; Etiqueta para sumar dos números enteros
 sumar:
-    call pedir_primer_numero
-    mov r8, rax
-    call pedir_segundo_numero
-    mov r9, rax
-    add r8, r9
+    call pedir_primer_numero      ; Llamamos a la etiqueta que solicita el primer número al usuario
+    mov r8, rax                  ; Guardamos el valor del primer número en el registro r8
+    call pedir_segundo_numero     ; Llamamos a la etiqueta que solicita el segundo número al usuario
+    mov r9, rax                  ; Guardamos el valor del segundo número en el registro r9
+    add r8, r9                   ; Sumamos los valores de r8 y r9 y almacenamos el resultado en r8
 
-    call limpiar_buffer_resultado
-    mov rdi, r8
+    call limpiar_buffer_resultado ; Llamamos a la etiqueta que limpia el buffer de resultados
+    mov rdi, r8                  ; Movemos el resultado de la suma al registro rdi para la conversión
 
-    call int_to_string
-    call int_to_hex_string
-    call int_to_octal
-    call int_to_binary
-    jmp mostrar_resultado
+    call int_to_string           ; Llamamos a la etiqueta que convierte el entero a cadena para imprimirlo en pantalla
+    call int_to_hex_string       ; Llamamos a la etiqueta que convierte el entero a hexadecimal
+    call int_to_octal            ; Llamamos a la etiqueta que convierte el entero a octal
+    call int_to_binary           ; Llamamos a la etiqueta que convierte el entero a binario
+    jmp mostrar_resultado        ; Saltamos a la etiqueta que imprime el resultado
 
+; Etiqueta para restar dos números enteros
 restar:
-    call pedir_primer_numero
-    mov r8, rax
-    call pedir_segundo_numero
-    mov r9, rax
-    sub r8, r9
+    call pedir_primer_numero      ; Llamamos a la etiqueta que solicita el primer número al usuario
+    mov r8, rax                  ; Guardamos el valor del primer número en el registro r8
+    call pedir_segundo_numero     ; Llamamos a la etiqueta que solicita el segundo número al usuario
+    mov r9, rax                  ; Guardamos el valor del segundo número en el registro r9
+    sub r8, r9                   ; Restamos el valor de r9 al valor de r8 y almacenamos el resultado en r8
 
-    call limpiar_buffer_resultado
-    mov rdi, r8
+    call limpiar_buffer_resultado ; Llamamos a la etiqueta que limpia el buffer de resultados
+    mov rdi, r8                  ; Movemos el resultado de la resta al registro rdi para la conversión
 
-    call int_to_string
-    call int_to_hex_string
-    call int_to_octal
-    call int_to_binary
-    jmp mostrar_resultado
+    call int_to_string           ; Llamamos a la etiqueta que convierte el entero a cadena para imprimirlo en pantalla
+    call int_to_hex_string       ; Llamamos a la etiqueta que convierte el entero a hexadecimal
+    call int_to_octal            ; Llamamos a la etiqueta que convierte el entero a octal
+    call int_to_binary           ; Llamamos a la etiqueta que convierte el entero a binario
+    jmp mostrar_resultado        ; Saltamos a la etiqueta que imprime el resultado
 
+; Etiqueta para multiplicar dos números enteros
 multiplicar:
-    call pedir_primer_numero
-    mov r8, rax
-    call pedir_segundo_numero
-    mov r9, rax
-    imul r8, r9
+    call pedir_primer_numero      ; Llamamos a la etiqueta que solicita el primer número al usuario
+    mov r8, rax                  ; Guardamos el valor del primer número en el registro r8
+    call pedir_segundo_numero     ; Llamamos a la etiqueta que solicita el segundo número al usuario
+    mov r9, rax                  ; Guardamos el valor del segundo número en el registro r9
+    imul r8, r9                  ; Multiplicamos los valores de r8 y r9 y almacenamos el resultado en r8
 
-    call limpiar_buffer_resultado
-    mov rdi, r8
+    call limpiar_buffer_resultado ; Llamamos a la etiqueta que limpia el buffer de resultados
+    mov rdi, r8                  ; Movemos el resultado de la multiplicación al registro rdi para la conversión
 
-    call int_to_string
-    call int_to_hex_string
-    call int_to_octal
-    call int_to_binary
-    jmp mostrar_resultado
+    call int_to_string           ; Llamamos a la etiqueta que convierte el entero a cadena para imprimirlo en pantalla
+    call int_to_hex_string       ; Llamamos a la etiqueta que convierte el entero a hexadecimal
+    call int_to_octal            ; Llamamos a la etiqueta que convierte el entero a octal
+    call int_to_binary           ; Llamamos a la etiqueta que convierte el entero a binario
+    jmp mostrar_resultado        ; Saltamos a la etiqueta que imprime el resultado
 
+; Etiqueta para dividir dos números enteros   
 dividir:
     call limpiar_buffer_resultado
 
